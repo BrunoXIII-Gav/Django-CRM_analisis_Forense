@@ -1,11 +1,24 @@
 # Django CRM
 
-[![CI](https://github.com/your-username/Django-CRM/actions/workflows/ci.yml/badge.svg)](https://github.com/your-username/Django-CRM/actions/workflows/ci.yml)
+[![CI](https://github.com/ChakerChourouk/Django-CRM/actions/workflows/ci.yml/badge.svg)](https://github.com/ChakerChourouk/Django-CRM/actions/workflows/ci.yml)
 [![Python 3.12](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/downloads/)
 [![Django 5.2](https://img.shields.io/badge/django-5.2-green.svg)](https://www.djangoproject.com/)
 [![DRF](https://img.shields.io/badge/DRF-3.15-red.svg)](https://www.django-rest-framework.org/)
+[![Live Demo](https://img.shields.io/badge/demo-Railway-blueviolet.svg)](https://web-production-8332.up.railway.app)
 
 A full-featured **Customer Relationship Management** system built with Django, MySQL, and Django REST Framework. Provides both a web interface and a RESTful API for managing customer records with authentication, search, pagination, and CRUD operations.
+
+### Live Demo: [web-production-8332.up.railway.app](https://web-production-8332.up.railway.app)
+
+---
+
+## Screenshots
+
+### Add a New Record
+![Add Record](images/add%20.png)
+
+### Record Detail — Update & Delete
+![Update and Delete Record](images/delete%20update.png)
 
 ---
 
@@ -79,7 +92,7 @@ Django-CRM/
 ### 1. Clone & install
 
 ```bash
-git clone https://github.com/your-username/Django-CRM.git
+git clone https://github.com/ChakerChourouk/Django-CRM.git
 cd Django-CRM
 python -m venv venv
 source venv/bin/activate  # Windows: venv\Scripts\activate
@@ -175,6 +188,32 @@ Tests cover:
 - Search and pagination
 - REST API endpoints
 - Permission enforcement
+
+---
+
+## Deployment (Railway)
+
+This app is deployed on [Railway](https://railway.app) with PostgreSQL.
+
+**Live URL:** [web-production-8332.up.railway.app](https://web-production-8332.up.railway.app)
+
+To deploy your own instance:
+
+1. Fork this repo
+2. Create a new project on [Railway](https://railway.app) and connect your GitHub repo
+3. Add a **PostgreSQL** database to the project
+4. Set environment variables:
+   | Variable | Value |
+   |---|---|
+   | `DJANGO_SETTINGS_MODULE` | `dcrm.settings.prod` |
+   | `SECRET_KEY` | *(generate a random key)* |
+   | `ALLOWED_HOSTS` | `.railway.app` |
+   | `DATABASE_URL` | `${{Postgres.DATABASE_URL}}` |
+5. Railway auto-deploys on every push. Migrations run automatically via the `release` command in the Procfile.
+6. Create a superuser via the Railway **Shell** tab:
+   ```bash
+   python manage.py createsuperuser
+   ```
 
 ---
 

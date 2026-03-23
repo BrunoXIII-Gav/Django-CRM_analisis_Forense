@@ -1,162 +1,184 @@
-# 🧩 Django CRM – Beginner Project
+# Django CRM
 
-This is a beginner-friendly **Customer Relationship Management (CRM)** system built with [Django](https://www.djangoproject.com/) and [MySQL](https://www.mysql.com/). It includes basic **CRUD functionality** and **user authentication** features such as login, registration, and logout.
+[![CI](https://github.com/your-username/Django-CRM/actions/workflows/ci.yml/badge.svg)](https://github.com/your-username/Django-CRM/actions/workflows/ci.yml)
+[![Python 3.12](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/downloads/)
+[![Django 5.2](https://img.shields.io/badge/django-5.2-green.svg)](https://www.djangoproject.com/)
+[![DRF](https://img.shields.io/badge/DRF-3.15-red.svg)](https://www.django-rest-framework.org/)
 
----
-
-## ✨ Features
-
-- 🔐 User registration, login & logout  
-- ➕ Add new customer records  
-- 📝 Update existing records  
-- ❌ Delete records  
-- 🔍 View detailed customer info  
-- 🧭 Clean, simple UI using Django templates  
-
-This project is ideal for learning how to:  
-- Use Django models, views, and templates  
-- Handle forms and user input  
-- Implement authentication  
-- Connect Django to a MySQL database  
+A full-featured **Customer Relationship Management** system built with Django, MySQL, and Django REST Framework. Provides both a web interface and a RESTful API for managing customer records with authentication, search, pagination, and CRUD operations.
 
 ---
 
-## 💻 Technologies Used
+## Features
 
-- **Backend:** Python & Django  
-- **Database:** MySQL  
-- **Frontend:** HTML/CSS (via Django templates)  
-- **Styling:** Bootstrap (optional)  
+- **Authentication** — Registration, login, logout with Django's auth system
+- **CRUD Operations** — Create, read, update, and delete customer records
+- **Search & Filter** — Search records by name, email, phone, or city
+- **Pagination** — Server-side pagination for efficient data browsing
+- **REST API** — Full CRUD API powered by Django REST Framework
+- **Admin Dashboard** — Customized Django admin with filters and search
+- **Responsive UI** — Bootstrap 5 for mobile-friendly design
+- **Security** — CSRF protection, POST-only deletes, env-based secrets, production hardening
+- **Docker Support** — Containerized with Docker Compose (Django + MySQL)
+- **CI/CD** — Automated testing via GitHub Actions
 
 ---
 
-## ⚙️ Installation Instructions
+## Tech Stack
 
-### 1. Clone the repository
-```bash
-git clone https://github.com/your-username/your-repo-name.git
-cd your-repo-name
+| Layer       | Technology                         |
+|-------------|------------------------------------|
+| Backend     | Python 3.12, Django 5.2            |
+| API         | Django REST Framework 3.15         |
+| Database    | MySQL 8.0                          |
+| Frontend    | Django Templates, Bootstrap 5      |
+| DevOps      | Docker, Docker Compose, GitHub Actions |
+| Server      | Gunicorn (production)              |
+
+---
+
+## Project Structure
+
+```
+Django-CRM/
+├── dcrm/                       # Project configuration
+│   ├── settings/
+│   │   ├── base.py             # Shared settings
+│   │   ├── dev.py              # Development overrides
+│   │   └── prod.py             # Production (HTTPS, HSTS, etc.)
+│   ├── urls.py
+│   └── wsgi.py
+├── website/                    # Main application
+│   ├── models.py               # Record model with validators
+│   ├── views.py                # Web views with auth decorators
+│   ├── forms.py                # SignUp + AddRecord forms
+│   ├── serializers.py          # DRF serializers
+│   ├── api_views.py            # DRF viewsets
+│   ├── api_urls.py             # API router
+│   ├── admin.py                # Customized admin
+│   ├── tests.py                # 20+ unit & integration tests
+│   └── templates/website/      # Namespaced templates
+├── .env.example                # Environment template
+├── .github/workflows/ci.yml   # GitHub Actions pipeline
+├── Dockerfile
+├── docker-compose.yml
+├── requirements.txt
+└── manage.py
 ```
 
-### 2. Create and activate a virtual environment
-```bash
-python3 -m venv env
-source env/bin/activate       # On Windows: env\Scripts\activate
-```
+---
 
-### 3. Install dependencies
+## Quick Start
+
+### Prerequisites
+
+- Python 3.10+
+- MySQL 8.0+
+- pip
+
+### 1. Clone & install
+
 ```bash
+git clone https://github.com/your-username/Django-CRM.git
+cd Django-CRM
+python -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-### 4. Configure MySQL Database
+### 2. Configure environment
 
-Make sure MySQL server is installed and running.
+```bash
+cp .env.example .env
+# Edit .env with your database credentials and secret key
+```
 
-Create a new MySQL database and user:
+### 3. Set up database
+
 ```sql
-CREATE DATABASE crm_db CHARACTER SET UTF8;
-CREATE USER 'crm_user'@'localhost' IDENTIFIED BY 'your_password';
-GRANT ALL PRIVILEGES ON crm_db.* TO 'crm_user'@'localhost';
-FLUSH PRIVILEGES;
+CREATE DATABASE elderco CHARACTER SET utf8mb4;
 ```
 
-Update your Django project's `settings.py` with your database credentials:
-```python
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'crm_db',
-        'USER': 'crm_user',
-        'PASSWORD': 'your_password',
-        'HOST': 'localhost',
-        'PORT': '3306',
-    }
-}
-```
+### 4. Run migrations & start
 
-### 5. Apply migrations
 ```bash
 python manage.py migrate
-```
-
-### 6. Create a superuser (admin account)
-```bash
 python manage.py createsuperuser
-```
-
-### 7. Run the development server
-```bash
 python manage.py runserver
 ```
 
-Open your browser and go to `http://127.0.0.1:8000/` to see the project in action.
+Open **http://127.0.0.1:8000/** in your browser.
 
 ---
 
-## 📦 Requirements
+## Docker
 
-Create a `requirements.txt` file with the following dependencies:
+```bash
+# Copy and configure environment
+cp .env.example .env
+
+# Build and start containers
+docker compose up --build -d
+
+# Run migrations inside container
+docker compose exec web python manage.py migrate
+docker compose exec web python manage.py createsuperuser
 ```
-Django>=4.2,<5.0
-mysqlclient>=2.1.0
-python-decouple>=3.6
+
+App available at **http://localhost:8000/**
+
+---
+
+## API Reference
+
+All endpoints require authentication (session-based).
+
+| Method   | Endpoint              | Description           |
+|----------|-----------------------|-----------------------|
+| `GET`    | `/api/records/`       | List all records      |
+| `POST`   | `/api/records/`       | Create a record       |
+| `GET`    | `/api/records/{id}/`  | Retrieve a record     |
+| `PUT`    | `/api/records/{id}/`  | Update a record       |
+| `PATCH`  | `/api/records/{id}/`  | Partial update        |
+| `DELETE` | `/api/records/{id}/`  | Delete a record       |
+
+### Example: Create a record
+
+```bash
+curl -X POST http://localhost:8000/api/records/ \
+  -H "Content-Type: application/json" \
+  -b "sessionid=<your-session-id>" \
+  -d '{
+    "first_name": "Jane",
+    "last_name": "Doe",
+    "email": "jane@example.com",
+    "phone": "+11234567890",
+    "address": "456 Oak Ave",
+    "city": "Portland",
+    "state": "OR",
+    "zipcode": "97201"
+  }'
 ```
----
-
-## 🛠️ Usage
-
-1. **Register a new account** or **login** with existing credentials
-2. **Add customers** using the "Add Customer" form
-3. **View all customers** in the main dashboard
-4. **Edit or delete** customer records as needed
-5. **Access admin panel** at `/admin/` using superuser credentials
 
 ---
 
-## 📋 Additional Notes
+## Running Tests
 
-- Ensure you have MySQL development headers installed (e.g., `libmysqlclient-dev` on Ubuntu) to install the `mysqlclient` Python package
-- Use environment variables or a `.env` file to keep sensitive data (like DB passwords) secure in production
-- For styling, Bootstrap is optionally included but not required
-- This setup is intended for local development. For production deployment, consider:
-  - Configuring proper static files handling
-  - Security settings (DEBUG=False, ALLOWED_HOSTS, etc.)
-  - Database backups and optimization
-  - Using a production WSGI server like Gunicorn
+```bash
+python manage.py test website --verbosity=2
+```
 
----
-
-## 🚀 Future Enhancements
-
-- [ ] Search and filter functionality
-- [ ] Export customer data to CSV/Excel
-- [ ] Email integration for customer communication
-- [ ] Dashboard with analytics and charts
-- [ ] REST API endpoints
-- [ ] Role-based permissions
+Tests cover:
+- Model creation and validation
+- Authentication (login, logout, registration)
+- CRUD views (create, read, update, delete)
+- Search and pagination
+- REST API endpoints
+- Permission enforcement
 
 ---
 
-## 🙋‍♂️ Contributing
+## License
 
-Feel free to fork this repo, submit issues, or open pull requests. This project is open for learning and improvement!
-
-1. Fork the project
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
----
-
-## 📜 License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-
----
-
-## 📞 Support
-
-If you have any questions or run into issues, please open an issue on GitHub or contact mc_chaker@esi.dz
+This project is open source and available under the [MIT License](LICENSE).
 

@@ -12,17 +12,22 @@ DEBUG = False
 
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "").split(",")
 
-# PythonAnywhere
-PA_HOSTNAME = os.environ.get("PA_HOSTNAME")
-if PA_HOSTNAME:
-    ALLOWED_HOSTS.append(PA_HOSTNAME)
-
 # Render.com
 RENDER_EXTERNAL_HOSTNAME = os.environ.get("RENDER_EXTERNAL_HOSTNAME")
 if RENDER_EXTERNAL_HOSTNAME:
     ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
 
-# Database — parse DATABASE_URL if provided (PostgreSQL / external DB)
+# Railway.app
+RAILWAY_PUBLIC_DOMAIN = os.environ.get("RAILWAY_PUBLIC_DOMAIN")
+if RAILWAY_PUBLIC_DOMAIN:
+    ALLOWED_HOSTS.append(RAILWAY_PUBLIC_DOMAIN)
+
+# CSRF trusted origins for proxied HTTPS
+CSRF_TRUSTED_ORIGINS = [
+    f"https://{host}" for host in ALLOWED_HOSTS if host and host != "*"
+]
+
+# Database — parse DATABASE_URL if provided (Render PostgreSQL)
 if os.environ.get("DATABASE_URL"):
     DATABASES = {
         "default": dj_database_url.config(

@@ -21,9 +21,15 @@ if RAILWAY_PUBLIC_DOMAIN:
     ALLOWED_HOSTS.append(RAILWAY_PUBLIC_DOMAIN)
 
 # CSRF trusted origins for proxied HTTPS
-CSRF_TRUSTED_ORIGINS = [
-    f"https://{host}" for host in ALLOWED_HOSTS if host and host != "*"
-]
+CSRF_TRUSTED_ORIGINS = []
+for host in ALLOWED_HOSTS:
+    if not host or host == "*":
+        continue
+    # Convert .railway.app (ALLOWED_HOSTS dot-prefix) to *.railway.app (CSRF wildcard)
+    if host.startswith("."):
+        CSRF_TRUSTED_ORIGINS.append(f"https://*{host}")
+    else:
+        CSRF_TRUSTED_ORIGINS.append(f"https://{host}")
 
 # Security settings
 SECURE_SSL_REDIRECT = True

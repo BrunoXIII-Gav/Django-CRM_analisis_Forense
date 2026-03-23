@@ -12,12 +12,17 @@ DEBUG = False
 
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "").split(",")
 
-# Render.com sets RENDER=true in its environment
+# PythonAnywhere
+PA_HOSTNAME = os.environ.get("PA_HOSTNAME")
+if PA_HOSTNAME:
+    ALLOWED_HOSTS.append(PA_HOSTNAME)
+
+# Render.com
 RENDER_EXTERNAL_HOSTNAME = os.environ.get("RENDER_EXTERNAL_HOSTNAME")
 if RENDER_EXTERNAL_HOSTNAME:
     ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
 
-# Database — parse DATABASE_URL if provided (Render PostgreSQL)
+# Database — parse DATABASE_URL if provided (PostgreSQL / external DB)
 if os.environ.get("DATABASE_URL"):
     DATABASES = {
         "default": dj_database_url.config(

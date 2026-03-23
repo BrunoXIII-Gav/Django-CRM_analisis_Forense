@@ -1,0 +1,25 @@
+databases:
+  - name: django-crm-db
+    databaseName: django_crm
+    plan: free
+
+services:
+  - type: web
+    name: django-crm
+    plan: free
+    runtime: python
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn dcrm.wsgi:application"
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: django-crm-db
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DJANGO_SETTINGS_MODULE
+        value: dcrm.settings.prod
+      - key: PYTHON_VERSION
+        value: "3.12.7"
+      - key: ALLOWED_HOSTS
+        value: ".onrender.com"

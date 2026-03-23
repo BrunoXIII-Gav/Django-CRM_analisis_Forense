@@ -4,13 +4,11 @@ Production settings — extends base.
 
 import os
 
-import dj_database_url
-
 from .base import *  # noqa: F401, F403
 
 DEBUG = False
 
-ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "").split(",")
+ALLOWED_HOSTS = [h for h in os.environ.get("ALLOWED_HOSTS", "").split(",") if h]
 
 # Render.com
 RENDER_EXTERNAL_HOSTNAME = os.environ.get("RENDER_EXTERNAL_HOSTNAME")
@@ -26,15 +24,6 @@ if RAILWAY_PUBLIC_DOMAIN:
 CSRF_TRUSTED_ORIGINS = [
     f"https://{host}" for host in ALLOWED_HOSTS if host and host != "*"
 ]
-
-# Database — parse DATABASE_URL if provided (Render PostgreSQL)
-if os.environ.get("DATABASE_URL"):
-    DATABASES = {
-        "default": dj_database_url.config(
-            conn_max_age=600,
-            conn_health_checks=True,
-        ),
-    }
 
 # Security settings
 SECURE_SSL_REDIRECT = True

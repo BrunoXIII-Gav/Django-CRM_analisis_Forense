@@ -4,6 +4,8 @@ Django base settings for dcrm project.
 
 import os
 from pathlib import Path
+
+import dj_database_url
 from dotenv import load_dotenv
 
 # Load environment variables from .env file
@@ -16,7 +18,7 @@ SECRET_KEY = os.environ.get("SECRET_KEY", "fallback-insecure-key-for-dev-only")
 
 DEBUG = os.environ.get("DEBUG", "False").lower() in ("true", "1", "yes")
 
-ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "").split(",")
+ALLOWED_HOSTS = [h for h in os.environ.get("ALLOWED_HOSTS", "").split(",") if h]
 
 # Application definition
 INSTALLED_APPS = [
@@ -60,17 +62,25 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "dcrm.wsgi.application"
 
-# Database
-DATABASES = {
-    "default": {
-        "ENGINE": os.environ.get("DB_ENGINE", "django.db.backends.mysql"),
-        "NAME": os.environ.get("DB_NAME", "elderco"),
-        "USER": os.environ.get("DB_USER", "root"),
-        "PASSWORD": os.environ.get("DB_PASSWORD", ""),
-        "HOST": os.environ.get("DB_HOST", "localhost"),
-        "PORT": os.environ.get("DB_PORT", "3306"),
+# Database — prefer DATABASE_URL (Railway/Render), fall back to individual vars
+if os.environ.get("DATABASE_URL"):
+    DATABASES = {
+        "default": dj_database_url.config(
+            conn_max_age=600,
+            conn_health_checks=True,
+        ),
     }
-}
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": os.environ.get("DB_ENGINE", "django.db.backends.mysql"),
+            "NAME": os.environ.get("DB_NAME", "elderco"),
+            "USER": os.environ.get("DB_USER", "root"),
+            "PASSWORD": os.environ.get("DB_PASSWORD", ""),
+            "HOST": os.environ.get("DB_HOST", "localhost"),
+            "PORT": os.environ.get("DB_PORT", "3306"),
+        }
+    }
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [

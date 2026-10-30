@@ -39,7 +39,7 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
-    "website.forensic.ForensicContextMiddleware",
+    "website.forensics.middleware.ForensicContextMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
@@ -99,6 +99,10 @@ USE_TZ = True
 
 # Static files
 STATIC_URL = "static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
+
+FORENSIC_CASE_TAG = os.environ.get("FORENSIC_CASE_TAG", "")
+FORENSIC_TRUSTED_PROXIES = [net.strip() for net in os.environ.get("FORENSIC_TRUSTED_PROXIES", "").split(",") if net.strip()]
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"

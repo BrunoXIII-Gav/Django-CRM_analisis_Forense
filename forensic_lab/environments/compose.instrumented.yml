@@ -1,0 +1,56 @@
+name: crm-forensic-b
+services:
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: ${LAB_ROOT_PASSWORD:?prepare_lab.py first}
+      MYSQL_DATABASE: crm_lab
+      MYSQL_USER: crm_migrate
+      MYSQL_PASSWORD: ${LAB_MIGRATE_PASSWORD:?}
+      LAB_RUNTIME_PASSWORD: ${LAB_RUNTIME_PASSWORD:?}
+      LAB_READER_PASSWORD: ${LAB_READER_PASSWORD:?}
+      TZ: UTC
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./provision_mysql.sh:/lab/provision_mysql.sh:ro
+      - ../../.lab/secrets/reader.cnf:/run/secrets/reader.cnf:ro
+    healthcheck:
+      test: [CMD, mysqladmin, ping, -h, '127.0.0.1', --protocol=tcp]
+      interval: 3s
+      timeout: 3s
+      retries: 40
+    logging: &logging
+      driver: json-file
+      options: {max-size: 20m, max-file: '5'}
+  migrate:
+    image: tasi-forensic-lab:local
+    build: {context: ../..}
+    environment: &env
+      DJANGO_SETTINGS_MODULE: dcrm.settings.lab
+      SECRET_KEY: ${LAB_SECRET_KEY:?}
+      DB_NAME: crm_lab
+      DB_HOST: db
+      DB_USER: crm_migrate
+      DB_PASSWORD: ${LAB_MIGRATE_PASSWORD:?}
+      ALLOWED_HOSTS: localhost,127.0.0.1,testserver
+      FORENSIC_CASE_TAG: ${LAB_CASE_TAG:-scenario-01}
+      LAB_DEMO_PASSWORD: ${LAB_DEMO_PASSWORD:?}
+      TZ: UTC
+    depends_on:
+      db: {condition: service_healthy}
+    command: [python, manage.py, migrate, --noinput]
+    profiles: [setup]
+  web:
+    image: tasi-forensic-lab:local
+    build: {context: ../..}
+    environment:
+      <<: *env
+      DB_USER: crm_runtime
+      DB_PASSWORD: ${LAB_RUNTIME_PASSWORD:?}
+    ports: ['127.0.0.1:8002:8000']
+    depends_on:
+      db: {condition: service_healthy}
+    command: [gunicorn, dcrm.wsgi:application, --bind, '0.0.0.0:8000', --access-logfile, '-']
+    logging: *logging
+volumes:
+  mysql_data:

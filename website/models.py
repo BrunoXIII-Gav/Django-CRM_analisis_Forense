@@ -1,3 +1,5 @@
+import uuid
+
 from django.core.validators import RegexValidator
 from django.db import models, router, transaction
 
@@ -26,7 +28,7 @@ class Record(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ["-created_at"]
+        ordering = ["-created_at", "-pk"]
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
@@ -69,6 +71,12 @@ class AuditEvent(models.Model):
     ]
 
     timestamp = models.DateTimeField(auto_now_add=True, db_index=True)
+    event_id = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    case_tag = models.CharField(max_length=100, blank=True, db_index=True)
+    user_agent = models.CharField(max_length=256, blank=True)
+    changed_fields = models.JSONField(default=list)
+    outcome = models.CharField(max_length=20, default="success")
+    committed = models.BooleanField(default=True, null=True)
     username = models.CharField(max_length=150, blank=True)
     user_id = models.IntegerField(null=True, blank=True)
     ip_address = models.GenericIPAddressField(null=True, blank=True)

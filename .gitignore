@@ -50,3 +50,7 @@ build/
 *.egg
 
 evidencias/
+.lab/
+.env.*
+!.env.example
+forensic_cases/

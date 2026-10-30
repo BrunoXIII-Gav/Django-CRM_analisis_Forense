@@ -10,6 +10,7 @@ from django.views.decorators.http import require_POST
 
 from .forms import AddRecordForm, SignUpForm
 from .models import Record
+from .forensics import services
 
 logger = logging.getLogger(__name__)
 
@@ -92,7 +93,7 @@ def customer_record(request, pk):
 def delete_record(request, pk):
     """Delete a customer record (POST only)."""
     record = get_object_or_404(Record, id=pk)
-    record.delete()
+    services.delete_record(record.pk, request=request)
     messages.success(request, "Record deleted successfully.")
     logger.info("Record #%s deleted by user '%s'.", pk, request.user.username)
     return redirect("home")
@@ -103,7 +104,7 @@ def add_record(request):
     """Add a new customer record."""
     form = AddRecordForm(request.POST or None)
     if request.method == "POST" and form.is_valid():
-        new_record = form.save()
+        new_record = services.create_record(form.cleaned_data, request=request)
         messages.success(request, "Record added.")
         logger.info("Record #%s created by user '%s'.", new_record.pk, request.user.username)
         return redirect("home")
@@ -116,7 +117,7 @@ def update_record(request, pk):
     current_record = get_object_or_404(Record, id=pk)
     form = AddRecordForm(request.POST or None, instance=current_record)
     if form.is_valid():
-        form.save()
+        services.update_record(pk, form.cleaned_data, request=request)
         messages.success(request, "Record has been updated!")
         logger.info("Record #%s updated by user '%s'.", pk, request.user.username)
         return redirect("home")

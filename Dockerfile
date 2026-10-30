@@ -13,12 +13,12 @@ RUN apt-get update && \
     pkg-config && \
     rm -rf /var/lib/apt/lists/*
 
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+COPY requirements.lock .
+RUN pip install --no-cache-dir -r requirements.lock
 
 COPY . .
 
-RUN python manage.py collectstatic --noinput || true
+RUN python manage.py collectstatic --noinput
 
 EXPOSE 8000
 

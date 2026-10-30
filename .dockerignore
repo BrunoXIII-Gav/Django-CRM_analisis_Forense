@@ -1,0 +1,13 @@
+.git
+.venv
+.lab
+.env
+.env.*
+!.env.example
+__pycache__
+*.pyc
+*.sql
+evidencias
+forensic_cases
+staticfiles
+db.sqlite3

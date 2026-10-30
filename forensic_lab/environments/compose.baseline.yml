@@ -1,0 +1,20 @@
+name: crm-forensic-a
+services:
+  db:
+    extends: {file: compose.instrumented.yml, service: db}
+  migrate:
+    extends: {file: compose.instrumented.yml, service: migrate}
+    image: tasi-forensic-baseline:local
+    build: {context: ../../.lab/baseline}
+    volumes: &overlays
+      - ../../dcrm/settings/lab.py:/app/dcrm/settings/lab.py:ro
+      - ../fixtures:/lab/fixtures:ro
+      - ../tools:/lab/tools:ro
+  web:
+    extends: {file: compose.instrumented.yml, service: web}
+    image: tasi-forensic-baseline:local
+    build: {context: ../../.lab/baseline}
+    ports: !override ['127.0.0.1:8001:8000']
+    volumes: *overlays
+volumes:
+  mysql_data:

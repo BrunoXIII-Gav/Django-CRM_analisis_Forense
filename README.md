@@ -34,6 +34,7 @@ A full-featured **Customer Relationship Management** system built with Django, M
 - **Security** — CSRF protection, POST-only deletes, env-based secrets, production hardening
 - **Docker Support** — Containerized with Docker Compose (Django + MySQL)
 - **CI/CD** — Automated testing via GitHub Actions
+- **Extensión forense** — Auditoría de cambios con contexto de solicitud, consulta de solo lectura y scripts de preservación SHA-256. Ver [guía de uso](docs/forense.md).
 
 ---
 

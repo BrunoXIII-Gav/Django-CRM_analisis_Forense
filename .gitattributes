@@ -3,3 +3,5 @@
 *.py text eol=lf
 *.yml text eol=lf
 *.md text eol=lf
+# Preserve reference documents exactly as provided.
+docs_local_md/*.md -text

@@ -1,2 +1,4 @@
 include:
-  - forensic_lab/environments/compose.instrumented.yml
+  - path:
+      - forensic_lab/environments/compose.instrumented.yml
+      - forensic_lab/environments/compose.runner.yml

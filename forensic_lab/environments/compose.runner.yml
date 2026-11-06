@@ -1,0 +1,44 @@
+# Merge with compose.instrumented.yml. The web server never receives the Docker socket.
+services:
+  web:
+    environment:
+      FORENSIC_CASES_ROOT: /cases
+      FORENSIC_JOBS_ROOT: /jobs
+      FORENSIC_RUNNER_ENABLED: 'true'
+    volumes:
+      - forensic_cases:/cases:ro
+      - forensic_jobs:/jobs
+  forensic-worker:
+    image: tasi-forensic-worker:local
+    build:
+      context: ../..
+      dockerfile: forensic_lab/environments/Dockerfile.worker
+    restart: unless-stopped
+    environment:
+      FORENSIC_CASES_ROOT: /cases
+      FORENSIC_JOBS_ROOT: /jobs
+      FORENSIC_PROJECT_ROOT: ${LAB_PROJECT_ROOT:-${PWD:?Run Compose from the repository root}}
+      FORENSIC_COMPOSE_PROJECT: ${COMPOSE_PROJECT_NAME:-}
+    volumes:
+      - forensic_cases:/cases
+      - forensic_jobs:/jobs
+      - type: bind
+        source: ${LAB_PROJECT_ROOT:-${PWD:?Run Compose from the repository root}}
+        target: ${LAB_PROJECT_ROOT:-${PWD:?Run Compose from the repository root}}
+        read_only: true
+        bind:
+          create_host_path: false
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      web: {condition: service_started}
+    healthcheck:
+      test: [CMD, python3, -c, "import sys; from forensic_lab.job_queue import JobQueue; sys.exit(0 if JobQueue('/jobs').health() else 1)"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+    logging:
+      driver: json-file
+      options: {max-size: 10m, max-file: '3'}
+volumes:
+  forensic_cases:
+  forensic_jobs:

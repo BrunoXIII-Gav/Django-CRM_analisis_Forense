@@ -1,0 +1,6 @@
+FROM docker:29-cli
+RUN apk add --no-cache python3
+ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
+WORKDIR /worker
+COPY forensic_lab /worker/forensic_lab
+CMD ["python3", "-m", "forensic_lab.job_worker"]

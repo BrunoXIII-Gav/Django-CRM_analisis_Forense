@@ -84,7 +84,7 @@ def generate(case, operator, truth_path=None, revision=1):
         derived(case, f"reporte/metrics{suffix}.json", json.dumps(metrics, ensure_ascii=False, indent=2), operator, references)
     lines = [f"# Informe {case.name}", "", f"Entorno: {metadata['environment']}. Analista: {operator}. Generado: {started}.", "",
         f"Alcance: {metadata['scope']}. Autorización declarada: {metadata['authorization']}.", "",
-        "## Método y fuentes", "", "Se verificaron originales y copias antes de examinar las copias. Se normalizaron tiempos con offset a UTC y se conservaron las ubicaciones de origen. La tabla de verdad se incorporó sólo después del examen para evaluar la reconstrucción.", "",
+        "## Método y fuentes", "", "Se verificaron originales y copias antes de examinar las copias. Se normalizaron tiempos con offset a UTC y se conservaron las ubicaciones de origen. " + ("La tabla de verdad se incorporó sólo después del examen para evaluar la reconstrucción." if truth_path else "No se utilizó una tabla de verdad; este informe describe la actividad adquirida sin métricas comparativas del guion."), "",
         "| ID | Archivo | Bytes | SHA-256 |", "| --- | --- | --- | --- |"]
     for item in entries:
         lines.append(f"| {item['evidence_id']} | {item['name']} | {item['size']} | {item['sha256']} |")

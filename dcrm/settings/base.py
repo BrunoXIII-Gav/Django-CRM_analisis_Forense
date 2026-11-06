@@ -103,6 +103,10 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 
 FORENSIC_CASE_TAG = os.environ.get("FORENSIC_CASE_TAG", "")
 FORENSIC_TRUSTED_PROXIES = [net.strip() for net in os.environ.get("FORENSIC_TRUSTED_PROXIES", "").split(",") if net.strip()]
+# Existing external case files are read in place; the viewer never creates cases.
+FORENSIC_CASES_ROOT = Path(os.environ.get("FORENSIC_CASES_ROOT", BASE_DIR.parent / "forensic_cases"))
+FORENSIC_RUNNER_ENABLED = os.environ.get("FORENSIC_RUNNER_ENABLED", "false").lower() == "true"
+FORENSIC_JOBS_ROOT = Path(os.environ.get("FORENSIC_JOBS_ROOT", BASE_DIR / ".lab/jobs"))
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"

@@ -1,0 +1,27 @@
+{% extends 'website/forensics/layout.html' %}
+{% block case_content %}
+<div class="forensic-heading">
+  <div><h1>Casos forenses</h1><p>Del registro de actividad a la reconstrucción de los hechos.</p></div>
+  <div class="forensic-actions">{% if can_run %}<a class="btn btn-dark" href="{% url 'forensic_new_case' %}">+ Nuevo caso</a>{% endif %}<a class="btn btn-outline-secondary" href="{% url 'admin:website_auditevent_changelist' %}">Consultar auditoría ↗</a></div>
+</div>
+{% if runner_enabled %}<div class="forensic-runner-status"><span class="forensic-status {% if runner_ready %}available{% else %}incident{% endif %}">{% if runner_ready %}Ejecutor conectado{% else %}Ejecutor sin conexión{% endif %}</span><span>Las fases se ejecutan en segundo plano y conservan sus productos.</span></div>{% endif %}
+{% if workflows %}<section class="forensic-panel"><h2 class="h5">Procedimientos iniciados</h2><div class="table-responsive"><table class="table forensic-table"><thead><tr><th>Caso</th><th>Responsable</th><th>Fases</th><th></th></tr></thead><tbody>{% for workflow in workflows %}<tr><td>{{ workflow.case_id }}</td><td>{{ workflow.spec.operator }}</td><td>{% for step in workflow.steps %}<span class="forensic-status {% if step.state == 'succeeded' %}available{% elif step.state == 'failed' %}incident{% endif %}">{{ step.label }}: {% if step.state == 'succeeded' %}terminada{% elif step.state == 'running' %}en ejecución{% elif step.state == 'queued' %}en cola{% elif step.state == 'failed' %}fallida{% else %}pendiente{% endif %}</span> {% endfor %}</td><td><a href="{% url 'forensic_workflow' workflow.case_id %}">Ver procedimiento →</a></td></tr>{% endfor %}</tbody></table></div></section>{% endif %}
+<div class="forensic-note">Este visor presenta expedientes adquiridos por las herramientas del laboratorio. Los eventos de auditoría del CRM se consultan por separado.</div>
+{% if page_obj %}
+<div class="forensic-case-grid">
+{% for case in page_obj %}
+<article class="forensic-card">
+  <div class="forensic-card-top"><span class="forensic-eyebrow">EXPEDIENTE</span><span class="forensic-badge">Entorno {{ case.metadata.environment|default:'sin registrar' }}</span></div>
+  <h2><a href="{% url 'forensic_case' case.id %}">{{ case.id }}</a></h2>
+  <p>{{ case.metadata.scope|default:'Sin alcance disponible en los metadatos.' }}</p>
+  <dl class="forensic-facts"><div><dt>Responsable de adquisición</dt><dd>{{ case.metadata.operator|default:'Sin información' }}</dd></div><div><dt>Inicio de adquisición (UTC)</dt><dd>{{ case.metadata.started_at_utc|default:'Sin información' }}</dd></div></dl>
+  {% if case.acquisition_failed or case.issues %}<span class="forensic-status incident">Incidencia registrada</span>{% elif case.acquisition_available %}<span class="forensic-status available">Productos de adquisición disponibles</span>{% else %}<span class="forensic-status">Sin información suficiente</span>{% endif %}
+  <a class="forensic-open" href="{% url 'forensic_case' case.id %}">Explorar expediente <span aria-hidden="true">→</span></a>
+</article>
+{% endfor %}
+</div>
+{% if page_obj.has_other_pages %}<nav class="forensic-pagination" aria-label="Páginas de expedientes">{% if page_obj.has_previous %}<a href="?page={{ page_obj.previous_page_number }}">← Anterior</a>{% endif %}<span>{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>{% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}">Siguiente →</a>{% endif %}</nav>{% endif %}
+{% else %}
+<section class="forensic-empty"><div class="forensic-empty-symbol" aria-hidden="true">⌁</div><h2>Aún no hay expedientes disponibles</h2><p>La actividad del CRM aparecerá en Auditoría. {% if can_run and runner_ready %}Pulsa «Nuevo caso» para adquirir la actividad existente e iniciar el recorrido.{% else %}Para recorrer las cuatro fases, primero adquiere un caso con el ejecutor o las herramientas del laboratorio.{% endif %}</p><p>{% if root_available %}La carpeta está accesible, pero no contiene expedientes reconocidos.{% else %}La carpeta externa de expedientes todavía no está accesible para esta aplicación.{% endif %}</p><details><summary>Cómo conectar los expedientes y el ejecutor</summary><p>La configuración de Docker incluye volúmenes de expedientes y tareas, y un servicio <code>forensic-worker</code>. El modo de consulta también admite carpetas externas en solo lectura. Consulta <code>docs/visor_forense.md</code> para la configuración.</p></details></section>
+{% endif %}
+{% endblock %}

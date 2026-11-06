@@ -1,0 +1,17 @@
+{% extends 'website/forensics/layout.html' %}
+{% block case_content %}
+<a class="forensic-back" href="{% url 'forensic_cases' %}">← Casos forenses</a>
+<div class="forensic-heading"><div><h1>Abrir un caso</h1><p>Adquiere la actividad existente del entorno B y conserva sus evidencias. Después podrás iniciar cada fase desde el procedimiento.</p></div><span class="forensic-badge">ENTORNO B</span></div>
+<div class="forensic-note">Deja de modificar clientes durante la adquisición. La solicitud registra quién la inició, su autorización y el intervalo declarado. Los originales y los casos anteriores se conservan.</div>
+{% if not runner_enabled or not runner_ready %}<div class="forensic-alert"><strong>El ejecutor todavía no está conectado.</strong><p>Activa el servicio <code>forensic-worker</code> junto con la aplicación. Una vez configurado, las siguientes corridas se inician desde esta pantalla. Consulta <code>docs/visor_forense.md</code>.</p></div>{% endif %}
+<form method="post" class="forensic-panel forensic-case-form">
+  {% csrf_token %}
+  {% if form.non_field_errors %}<div class="forensic-alert" role="alert">{{ form.non_field_errors }}</div>{% endif %}
+  <h2>Identificación y autorización</h2>
+  <div class="forensic-form-grid">
+    {% for field in form %}{% if field.name != 'writes_stopped' %}<div class="{% if field.name == 'scope' or field.name == 'authorization' %}forensic-form-wide{% endif %}"><label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}{% if field.help_text %}<div class="form-text">{{ field.help_text }}</div>{% endif %}{% for error in field.errors %}<div class="forensic-field-error">{{ error }}</div>{% endfor %}</div>{% endif %}{% endfor %}
+  </div>
+  <div class="forensic-attestation form-check">{{ form.writes_stopped }}<label class="form-check-label" for="{{ form.writes_stopped.id_for_label }}">{{ form.writes_stopped.label }}</label>{% for error in form.writes_stopped.errors %}<div class="forensic-field-error">{{ error }}</div>{% endfor %}</div>
+  <div class="forensic-form-footer"><button type="submit" class="btn btn-dark" {% if not runner_enabled or not runner_ready %}disabled{% endif %}>Crear caso e iniciar recolección →</button><span>El examen, la reconstrucción y el informe se solicitan después, en orden.</span></div>
+</form>
+{% endblock %}

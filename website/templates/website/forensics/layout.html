@@ -1,0 +1,12 @@
+{% extends 'website/base.html' %}
+{% load static %}
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'website/forensics.css' %}">
+{% endblock %}
+{% block content %}
+<main class="forensic-workspace" lang="es">
+  <div class="forensic-eyebrow">LABORATORIO EDUCATIVO <span>CONSULTA DE EXPEDIENTES</span></div>
+  {% block case_content %}{% endblock %}
+  <footer class="forensic-footer">Fuentes persistentes · Recolección, examen, análisis y reporte · RAM fuera del alcance</footer>
+</main>
+{% endblock %}
